@@ -3,7 +3,7 @@ package com.michalgoly.snake;
 import com.michalgoly.snake.factory.AppleCreator;
 import com.michalgoly.snake.factory.GameObjectCreator;
 import com.michalgoly.snake.builder.GameConfig;
-import com.michalgoly.snake.builder.ConcreteGameConfigBuilder;
+
 /**
  * This class is responsible for running the game, or indeed making the
  * snake move. 
@@ -13,7 +13,6 @@ import com.michalgoly.snake.builder.ConcreteGameConfigBuilder;
 public class Game implements Runnable {
 
 	// The amount of time in miliseconds between each 'tick'
-	public static final int DELAY = 400;
 	private SnakeFrame frame;
 	private GameField gameField;
 	private Snake snake;

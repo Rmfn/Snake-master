@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import com.michalgoly.snake.builder.ConcreteGameConfigBuilder;
 import com.michalgoly.snake.builder.GameConfig;
 
 import javax.swing.JPanel;
@@ -20,9 +21,8 @@ import javax.swing.JPanel;
  */
 public class GameField extends JPanel {
 	
-	public static final int PANEL_WIDTH = 400;
-	public static final int PANEL_HEIGHT = 400;
-	private GameConfig config;
+
+	private GameConfig config = new ConcreteGameConfigBuilder().build();
 	
 	// Thread-safe: the game thread adds/removes while Swing paints
 	private List<GameObject> gameObjects = new CopyOnWriteArrayList<GameObject>();

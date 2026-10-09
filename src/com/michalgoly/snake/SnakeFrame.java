@@ -26,12 +26,8 @@ public class SnakeFrame extends JFrame {
 	private Thread thread;
 	private Snake snake;
 
-	private GameConfig config = new ConcreteGameConfigBuilder()
-        .setDelay(Game.DELAY)
-        .setPanelWidth(GameField.PANEL_WIDTH)
-        .setPanelHeight(GameField.PANEL_HEIGHT)
-        .build();
-	
+private GameConfig config = new ConcreteGameConfigBuilder().build();
+
 	// Current direction of the snake
 	private Direction direction = Direction.UP;
 	
