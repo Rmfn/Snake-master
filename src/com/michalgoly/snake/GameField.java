@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import com.michalgoly.snake.builder.GameConfig;
 
 import javax.swing.JPanel;
 
@@ -21,6 +22,7 @@ public class GameField extends JPanel {
 	
 	public static final int PANEL_WIDTH = 400;
 	public static final int PANEL_HEIGHT = 400;
+	private GameConfig config;
 	
 	// Thread-safe: the game thread adds/removes while Swing paints
 	private List<GameObject> gameObjects = new CopyOnWriteArrayList<GameObject>();
@@ -30,10 +32,16 @@ public class GameField extends JPanel {
 	 * Constructs the game field, which is the rectangular area where snake can
 	 * move
 	 */
-	public GameField() {
-		setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
-		setBackground(Color.BLACK);
-	}
+	public GameField(GameConfig config) {
+    this.config = config;
+
+    setPreferredSize(new Dimension(
+        config.getPanelWidth(),
+        config.getPanelHeight()
+    ));
+
+    setBackground(Color.BLACK);
+}
 	
 	public void addGameObject(GameObject gameObject) {
 		gameObjects.add(gameObject);

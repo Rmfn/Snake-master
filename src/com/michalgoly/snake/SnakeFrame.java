@@ -4,10 +4,10 @@ import java.awt.EventQueue;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
+import com.michalgoly.snake.builder.GameConfig;
+import com.michalgoly.snake.builder.ConcreteGameConfigBuilder;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
 import com.horstmann.corejava.GBC;
 import com.michalgoly.snake.factory.GameObjectCreator;
 import com.michalgoly.snake.factory.SnakeCreator;
@@ -25,6 +25,12 @@ public class SnakeFrame extends JFrame {
 	private GameField gameField;
 	private Thread thread;
 	private Snake snake;
+
+	private GameConfig config = new ConcreteGameConfigBuilder()
+        .setDelay(Game.DELAY)
+        .setPanelWidth(GameField.PANEL_WIDTH)
+        .setPanelHeight(GameField.PANEL_HEIGHT)
+        .build();
 	
 	// Current direction of the snake
 	private Direction direction = Direction.UP;
@@ -48,7 +54,7 @@ public class SnakeFrame extends JFrame {
 		scorePanel = new ScorePanel();
 		add(scorePanel, new GBC(0, 8, 8, 1));
 		
-		gameField = new GameField();
+		gameField = new GameField(config);
 		add(gameField, new GBC(0, 0, 8, 8));
 
 	}
@@ -56,7 +62,7 @@ public class SnakeFrame extends JFrame {
 	private void initGame() {
 		GameObjectCreator snakeCreator = new SnakeCreator(gameField, scorePanel);
 		snake = (Snake) snakeCreator.spawn(gameField);
-		Runnable r = new Game(gameField, snake, this);
+		Runnable r = new Game(gameField, snake, this, config);
 		thread = new Thread(r);
 	}
 	

@@ -2,7 +2,8 @@ package com.michalgoly.snake;
 
 import com.michalgoly.snake.factory.AppleCreator;
 import com.michalgoly.snake.factory.GameObjectCreator;
-
+import com.michalgoly.snake.builder.GameConfig;
+import com.michalgoly.snake.builder.ConcreteGameConfigBuilder;
 /**
  * This class is responsible for running the game, or indeed making the
  * snake move. 
@@ -13,10 +14,10 @@ public class Game implements Runnable {
 
 	// The amount of time in miliseconds between each 'tick'
 	public static final int DELAY = 400;
-
 	private SnakeFrame frame;
 	private GameField gameField;
 	private Snake snake;
+	private final GameConfig config;
 	
 	/**
 	 * Constructs a new runnable Game object which can be used to create
@@ -25,16 +26,18 @@ public class Game implements Runnable {
 	 * @param snake The snake object
 	 * @param frame The frame which will be notified when the game is over
 	 */
-	public Game(GameField gameField, Snake snake, SnakeFrame frame) {
-		this.frame = frame;
-		this.snake = snake;
-		this.gameField = gameField;
+	
+	public Game(GameField gameField, Snake snake,
+            SnakeFrame frame, GameConfig config) {
+    this.frame = frame;
+    this.snake = snake;
+    this.gameField = gameField;
+    this.config = config;
 
-		// Factory Method: Game asks a creator instead of calling "new Apple"
-		GameObjectCreator appleCreator = new AppleCreator();
-		Apple apple = (Apple) appleCreator.spawn(gameField);
-		this.gameField.setApple(apple);
-	}
+    GameObjectCreator appleCreator = new AppleCreator();
+    Apple apple = (Apple) appleCreator.spawn(gameField);
+    this.gameField.setApple(apple);
+}
 
 	@Override
 	public void run() {
@@ -48,7 +51,7 @@ public class Game implements Runnable {
 				if (!Thread.currentThread().isInterrupted()) {
 					gameField.repaint();
 				}
-				Thread.sleep(DELAY);
+				Thread.sleep(config.getDelay());
 			}
 		} catch (InterruptedException ex) {
 			frame.gameOver();
