@@ -1,5 +1,7 @@
 package com.michalgoly.snake;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 
 /**
@@ -8,7 +10,7 @@ import java.awt.geom.Ellipse2D;
  * 
  * @author Michal Goly
  */
-public class Apple {
+public class Apple implements GameObject {
 	
 	public static final int XSIZE = 20;
 	public static final int YSIZE = 20;
@@ -52,6 +54,16 @@ public class Apple {
 		return d;
 	}
 	
+	/**
+	 * Draws the apple 
+	 */
+	@Override
+	public void draw(Graphics2D g2) {
+		g2.setPaint(Color.WHITE);
+		g2.fillOval((int) getShape().getMinX() + 5,
+				(int) getShape().getMinY() + 5, 10, 10);
+	}
+
 	/**
 	 * @return The shape of the apple
 	 */

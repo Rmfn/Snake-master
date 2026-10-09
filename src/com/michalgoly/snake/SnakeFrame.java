@@ -9,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import com.horstmann.corejava.GBC;
+import com.michalgoly.snake.factory.GameObjectCreator;
+import com.michalgoly.snake.factory.SnakeCreator;
 
 /**
  * SnakeFrame initializes and lays out other GUI componnets within itself. It
@@ -52,7 +54,8 @@ public class SnakeFrame extends JFrame {
 	}
 	
 	private void initGame() {
-		snake = new Snake(gameField, scorePanel);
+		GameObjectCreator snakeCreator = new SnakeCreator(gameField, scorePanel);
+		snake = (Snake) snakeCreator.spawn(gameField);
 		Runnable r = new Game(gameField, snake, this);
 		thread = new Thread(r);
 	}
@@ -87,14 +90,11 @@ public class SnakeFrame extends JFrame {
 			case JOptionPane.OK_OPTION:
 				direction = Direction.UP;
 				started = false;
-				snake = new Snake(gameField, scorePanel);
 				scorePanel.clear();
-				gameField.initDefaults();
+				gameField.clearGameObjects();
+				initGame(); // reuse the same creation code, no duplication
 				scorePanel.repaint();
 				gameField.repaint();
-				Runnable r = new Game(gameField, snake, this);
-				thread = null;
-				thread = new Thread(r);
 				break;
 				
 			case JOptionPane.CANCEL_OPTION:

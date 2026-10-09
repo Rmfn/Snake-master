@@ -1,5 +1,7 @@
 package com.michalgoly.snake;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +13,7 @@ import java.util.List;
  * 
  * @author Michal Goly
  */
-public class Snake {
+public class Snake implements GameObject {
 	
 	// size of a single snake part
 	public static final int XSIZE = 20;
@@ -135,6 +137,21 @@ public class Snake {
 	 */
 	public boolean isGameOver() {
 		return over;
+	}
+
+	/**
+	 * Draws the snake
+	 */
+	@Override
+	public void draw(Graphics2D g2) {
+		// body
+		g2.setPaint(new Color(34, 136, 215)); // BLUE
+		for (Ellipse2D e : snakeParts) {
+			g2.fill(e);
+		}
+		// head
+		g2.setPaint(new Color(215, 34, 38));  // RED
+		g2.fill(snakeParts.get(0));
 	}
 
 	private void moveBody() {

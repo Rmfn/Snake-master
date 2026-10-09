@@ -1,5 +1,8 @@
 package com.michalgoly.snake;
 
+import com.michalgoly.snake.factory.AppleCreator;
+import com.michalgoly.snake.factory.GameObjectCreator;
+
 /**
  * This class is responsible for running the game, or indeed making the
  * snake move. 
@@ -14,7 +17,6 @@ public class Game implements Runnable {
 	private SnakeFrame frame;
 	private GameField gameField;
 	private Snake snake;
-	private Apple apple;
 	
 	/**
 	 * Constructs a new runnable Game object which can be used to create
@@ -24,12 +26,13 @@ public class Game implements Runnable {
 	 * @param frame The frame which will be notified when the game is over
 	 */
 	public Game(GameField gameField, Snake snake, SnakeFrame frame) {
-		apple = new Apple(100, 100);
 		this.frame = frame;
 		this.snake = snake;
 		this.gameField = gameField;
 
-		this.gameField.setSnakeParts(snake.getParts());
+		// Factory Method: Game asks a creator instead of calling "new Apple"
+		GameObjectCreator appleCreator = new AppleCreator();
+		Apple apple = (Apple) appleCreator.spawn(gameField);
 		this.gameField.setApple(apple);
 	}
 
