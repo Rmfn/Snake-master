@@ -12,7 +12,7 @@ import com.michalgoly.snake.builder.GameConfig;
  */
 public class Game implements Runnable {
 
-	// The amount of time in miliseconds between each 'tick'
+
 	private SnakeFrame frame;
 	private GameField gameField;
 	private Snake snake;
@@ -24,6 +24,7 @@ public class Game implements Runnable {
 	 * @param gameField The rectangular area where snake can move
 	 * @param snake The snake object
 	 * @param frame The frame which will be notified when the game is over
+	 * @param config The game configuration that holds the delay between each tick
 	 */
 	
 	public Game(GameField gameField, Snake snake,
