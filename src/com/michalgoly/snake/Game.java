@@ -1,8 +1,7 @@
 package com.michalgoly.snake;
 
-import com.michalgoly.snake.factory.AppleCreator;
-import com.michalgoly.snake.factory.GameObjectCreator;
 import com.michalgoly.snake.builder.GameConfig;
+import com.michalgoly.snake.factory.Fruit;
 
 /**
  * This class is responsible for running the game, or indeed making the
@@ -17,6 +16,7 @@ public class Game implements Runnable {
 	private GameField gameField;
 	private Snake snake;
 	private final GameConfig config;
+
 	
 	/**
 	 * Constructs a new runnable Game object which can be used to create
@@ -34,25 +34,29 @@ public class Game implements Runnable {
     this.gameField = gameField;
     this.config = config;
 
-    GameObjectCreator appleCreator = new AppleCreator();
-    Apple apple = (Apple) appleCreator.spawn(gameField);
-    this.gameField.setApple(apple);
+    this.gameField.setSnakeParts(snake.getParts());
+	this.gameField.updateFruits(snake, 0);
 }
+	
 
 	@Override
 	public void run() {
 		try {
-			while (true) {
-				snake.move();
-				snake.check();
-				if (snake.isGameOver()) {
-					Thread.currentThread().interrupt();
-				}
-				if (!Thread.currentThread().isInterrupted()) {
-					gameField.repaint();
-				}
-				Thread.sleep(config.getDelay());
-			}
+            while (true) {
+                snake.move();
+                Fruit eaten = snake.check();
+                if (eaten != null) {
+                    gameField.fruitEaten(eaten);
+                }
+                gameField.updateFruits(snake, config.getDelay());
+                if (snake.isGameOver()) {
+                    Thread.currentThread().interrupt();
+                }
+                if (!Thread.currentThread().isInterrupted()) {
+                    gameField.repaint();
+                }
+                Thread.sleep(config.getDelay());
+            }
 		} catch (InterruptedException ex) {
 			frame.gameOver();
 		}

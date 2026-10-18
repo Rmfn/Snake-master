@@ -4,13 +4,13 @@ import java.awt.EventQueue;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import com.michalgoly.snake.builder.GameConfig;
-import com.michalgoly.snake.builder.ConcreteGameConfigBuilder;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+
 import com.horstmann.corejava.GBC;
-import com.michalgoly.snake.factory.GameObjectCreator;
-import com.michalgoly.snake.factory.SnakeCreator;
+import com.michalgoly.snake.builder.ConcreteGameConfigBuilder;
+import com.michalgoly.snake.builder.GameConfig;
 
 /**
  * SnakeFrame initializes and lays out other GUI componnets within itself. It
@@ -26,7 +26,11 @@ public class SnakeFrame extends JFrame {
 	private Thread thread;
 	private Snake snake;
 
-private GameConfig config = new ConcreteGameConfigBuilder().build();
+private GameConfig config = new ConcreteGameConfigBuilder()
+							.setPanelHeight(400)
+							.setPanelWidth(400)
+							.setDelay(200)
+							.build();
 
 	// Current direction of the snake
 	private Direction direction = Direction.UP;
@@ -56,8 +60,7 @@ private GameConfig config = new ConcreteGameConfigBuilder().build();
 	}
 	
 	private void initGame() {
-		GameObjectCreator snakeCreator = new SnakeCreator(gameField, scorePanel);
-		snake = (Snake) snakeCreator.spawn(gameField);
+		snake = new Snake(gameField, scorePanel);
 		Runnable r = new Game(gameField, snake, this, config);
 		thread = new Thread(r);
 	}
@@ -92,11 +95,14 @@ private GameConfig config = new ConcreteGameConfigBuilder().build();
 			case JOptionPane.OK_OPTION:
 				direction = Direction.UP;
 				started = false;
+				snake = new Snake(gameField, scorePanel);
 				scorePanel.clear();
-				gameField.clearGameObjects();
-				initGame(); // reuse the same creation code, no duplication
+				gameField.initDefaults();
 				scorePanel.repaint();
 				gameField.repaint();
+				Runnable r = new Game(gameField, snake, this, config);
+				thread = null;
+				thread = new Thread(r);
 				break;
 				
 			case JOptionPane.CANCEL_OPTION:

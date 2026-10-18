@@ -1,11 +1,11 @@
 package com.michalgoly.snake;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import com.michalgoly.snake.factory.Fruit;
 
 /**
  * This class represents a snake which is represented as a list of snake parts
@@ -13,7 +13,7 @@ import java.util.List;
  * 
  * @author Michal Goly
  */
-public class Snake implements GameObject {
+public class Snake {
 	
 	// size of a single snake part
 	public static final int XSIZE = 20;
@@ -109,27 +109,30 @@ public class Snake implements GameObject {
 	}
 
 	/**
-	 * Checks if the snake ate the apple or ate itself
+	 * Checks if the snake ate one of the fruits or ate itself
+	 * @return the fruit that was eaten, or null if no fruit was eaten
 	 */
-	public void check() {
+	public Fruit check() {
 		Ellipse2D.Double head = snakeParts.get(0);
-		Apple apple = gameField.getApple();
 		
 		// Ate itself
 		for (int i = 1; i < snakeParts.size(); i++) {
 			if (head.getMinX() == snakeParts.get(i).getMinX()
 					&& head.getMinY() == snakeParts.get(i).getMinY()) {
 				over = true;
-				return;
+				return null;
 			}
 		}
-		// Ate apple
-		if (head.getMinX() == apple.getShape().getMinX()
-				&& head.getMinY() == apple.getShape().getMinY()) {
-			scorePanel.addPoints(10);
-			apple.next(this);
-			snakeParts.add(ass);
-		}
+		// Ate a fruit: the points depend on the actual fruit
+		for (Fruit fruit : gameField.getFruits()) {
+        if (head.getMinX() == fruit.getShape().getMinX()
+                && head.getMinY() == fruit.getShape().getMinY()) {
+            scorePanel.addPoints(fruit.getPoints());
+            snakeParts.add(ass);
+            return fruit;
+        }
+    }
+    return null;
 	}
 	
 	/**
@@ -139,20 +142,7 @@ public class Snake implements GameObject {
 		return over;
 	}
 
-	/**
-	 * Draws the snake
-	 */
-	@Override
-	public void draw(Graphics2D g2) {
-		// body
-		g2.setPaint(new Color(34, 136, 215)); // BLUE
-		for (Ellipse2D e : snakeParts) {
-			g2.fill(e);
-		}
-		// head
-		g2.setPaint(new Color(215, 34, 38));  // RED
-		g2.fill(snakeParts.get(0));
-	}
+	
 
 	private void moveBody() {
 		for (int i = snakeParts.size() - 1; i > 0; i--) {
