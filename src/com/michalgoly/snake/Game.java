@@ -16,6 +16,7 @@ public class Game implements Runnable {
 	private GameField gameField;
 	private Snake snake;
 	private final GameConfig config;
+    private final SnakeEffects effects;
 
 	
 	/**
@@ -33,6 +34,7 @@ public class Game implements Runnable {
     this.snake = snake;
     this.gameField = gameField;
     this.config = config;
+    this.effects = new SnakeEffects(gameField, config.getDelay());
 
     this.gameField.setSnakeParts(snake.getParts());
 	this.gameField.updateFruits(snake, 0);
@@ -44,9 +46,11 @@ public class Game implements Runnable {
 		try {
             while (true) {
                 snake.move();
+                effects.tick();
                 Fruit eaten = snake.check();
                 if (eaten != null) {
                     gameField.fruitEaten(eaten);
+                    effects.fruitEaten(eaten);
                 }
                 gameField.updateFruits(snake, config.getDelay());
                 if (snake.isGameOver()) {

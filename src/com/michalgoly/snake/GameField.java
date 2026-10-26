@@ -12,7 +12,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JPanel;
+
 import com.michalgoly.snake.builder.GameConfig;
+import com.michalgoly.snake.decorator.BasicSnakeRenderer;
+import com.michalgoly.snake.decorator.SnakeRenderer;
 import com.michalgoly.snake.factory.AppleCreator;
 import com.michalgoly.snake.factory.BananaCreator;
 import com.michalgoly.snake.factory.CherryCreator;
@@ -46,6 +49,8 @@ public class GameField extends JPanel {
 	// Thread-safe: the game thread adds/removes while Swing paints.
 	private List<Fruit> fruits;
 	private Fruit apple;
+
+	private volatile SnakeRenderer snakeRenderer;
 	
 	/**
 	 * Constructs the game field, which is the rectangular area where snake can
@@ -72,6 +77,7 @@ public class GameField extends JPanel {
         bonusFruit = null;
         timer = 0;
         bonusCount = 0;
+		snakeRenderer = new BasicSnakeRenderer();
 		snakeParts = Collections
 				.synchronizedList(new ArrayList<Ellipse2D.Double>());
 		snakeParts.add(new Ellipse2D.Double(260, 260, 20, 20));
@@ -120,6 +126,11 @@ public class GameField extends JPanel {
 		this.snakeParts = snakeParts;
 	}
 
+	public void setSnakeRenderer(SnakeRenderer snakeRenderer) {
+		this.snakeRenderer = snakeRenderer;
+		repaint();
+	}
+
 	public void addFruit(Fruit fruit) {
 		fruits.add(fruit);
 	}
@@ -141,13 +152,7 @@ public class GameField extends JPanel {
 		for (Fruit fruit : fruits) {
 			fruit.draw(g2);
 		}
-		// Draw the snake parts
-		g2.setPaint(new Color(34, 136, 215)); // BLUE
-		for (Ellipse2D e : snakeParts) {
-			g2.fill(e);
-		}
-		// Draw the head of the snake
-		g2.setPaint(new Color(215, 34, 38));  // RED
-		g2.fill(snakeParts.get(0));
+		
+		snakeRenderer.draw(g2, snakeParts);
 	}
 }
