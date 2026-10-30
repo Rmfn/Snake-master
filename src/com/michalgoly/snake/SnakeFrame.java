@@ -9,8 +9,10 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import com.horstmann.corejava.GBC;
+import com.michalgoly.snake.Facade.GameFacade;
 import com.michalgoly.snake.builder.ConcreteGameConfigBuilder;
 import com.michalgoly.snake.builder.GameConfig;
+// import com.michalgoly.snake.facade.GameFacade;
 
 /**
  * SnakeFrame initializes and lays out other GUI componnets within itself. It
@@ -23,8 +25,10 @@ public class SnakeFrame extends JFrame {
 	
 	private ScorePanel scorePanel;
 	private GameField gameField;
-	private Thread thread;
-	private Snake snake;
+	// private Thread thread;
+	// private Snake snake;
+	private GameFacade gameFacade;
+	//  private Runnable game;
 
 private GameConfig config = new ConcreteGameConfigBuilder()
 							.setPanelHeight(400)
@@ -59,11 +63,20 @@ private GameConfig config = new ConcreteGameConfigBuilder()
 
 	}
 	
-	private void initGame() {
-		snake = new Snake(gameField, scorePanel);
-		Runnable r = new Game(gameField, snake, this, config);
-		thread = new Thread(r);
-	}
+	// private void initGame() {
+	// 	snake = new Snake(gameField, scorePanel);
+	// 	Runnable r = new Game(gameField, snake, this, config);
+	// 	thread = new Thread(r);
+	// }
+	//reemmm facade (before and after of initgame)
+	 private void initGame() {
+        gameFacade = new GameFacade(
+                gameField,
+                scorePanel,
+                this,
+                config
+        );
+    }
 	
 	private void initFrame() {
 		pack();
@@ -78,9 +91,9 @@ private GameConfig config = new ConcreteGameConfigBuilder()
 	 * Starts a new game
 	 */
 	public void newGame() {
-		started = true;
-		thread.start();
-	}
+    started = true;
+    gameFacade.startGame();
+}
 	
 	/**
 	 * Ends the game and enables the user to decide whether he wants to continue
@@ -95,14 +108,7 @@ private GameConfig config = new ConcreteGameConfigBuilder()
 			case JOptionPane.OK_OPTION:
 				direction = Direction.UP;
 				started = false;
-				snake = new Snake(gameField, scorePanel);
-				scorePanel.clear();
-				gameField.initDefaults();
-				scorePanel.repaint();
-				gameField.repaint();
-				Runnable r = new Game(gameField, snake, this, config);
-				thread = null;
-				thread = new Thread(r);
+				gameFacade.restartGame();
 				break;
 				
 			case JOptionPane.CANCEL_OPTION:
@@ -139,41 +145,39 @@ private GameConfig config = new ConcreteGameConfigBuilder()
 		
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if (e.getKeyCode() == KeyEvent.VK_UP) {
-				if (direction == Direction.DOWN) return;
-				if (!started) newGame();
-				if (snake != null) {
-					snake.changeDirection(Direction.UP);
-					direction = Direction.UP;
-				}
-			}
-			
-			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-				if (direction == Direction.UP) return;
-				if (!started) newGame();
-				if (snake != null) {
-					snake.changeDirection(Direction.DOWN);
-					direction = Direction.DOWN;
-				}
-			}
-			
-			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-				if (direction == Direction.RIGHT) return;
-				if (!started) newGame();
-				if (snake != null) {
-					snake.changeDirection(Direction.LEFT);
-					direction = Direction.LEFT;
-				}
-			}
-			
-			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-				if (direction == Direction.LEFT) return;
-				if (!started) newGame();
-				if (snake != null) {
-					snake.changeDirection(Direction.RIGHT);
-					direction = Direction.RIGHT;
-				}
-			}
-		}
-	}
+
+        if (e.getKeyCode() == KeyEvent.VK_UP) {
+            if (direction == Direction.DOWN) return;
+            if (!started) newGame();
+
+            gameFacade.changeDirection(Direction.UP);
+            direction = Direction.UP;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            if (direction == Direction.UP) return;
+            if (!started) newGame();
+
+            gameFacade.changeDirection(Direction.DOWN);
+            direction = Direction.DOWN;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            if (direction == Direction.RIGHT) return;
+            if (!started) newGame();
+
+            gameFacade.changeDirection(Direction.LEFT);
+            direction = Direction.LEFT;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            if (direction == Direction.LEFT) return;
+            if (!started) newGame();
+
+            gameFacade.changeDirection(Direction.RIGHT);
+            direction = Direction.RIGHT;
+        }
+    }
 }
+}
+
