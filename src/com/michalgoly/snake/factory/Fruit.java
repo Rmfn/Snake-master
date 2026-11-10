@@ -1,6 +1,8 @@
 package com.michalgoly.snake.factory;
 
 import com.michalgoly.snake.Snake;
+import com.michalgoly.snake.SnakeEffects;
+
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 // product
@@ -24,6 +26,9 @@ public abstract class Fruit {
 	 * @return The points the player gets for eating this fruit
 	 */
 	public abstract int getPoints();
+
+	public void applyEffect(SnakeEffects effects) {
+	}
 
 	/**
 	 * Draws the fruit, each fruit looks different

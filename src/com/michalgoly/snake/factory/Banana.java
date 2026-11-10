@@ -2,6 +2,8 @@ package com.michalgoly.snake.factory;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import com.michalgoly.snake.SnakeEffects;
+
 /**
  * [Factory Method - ConcreteProduct]
  * A yellow fruit worth 20 points.
@@ -13,6 +15,11 @@ public class Banana extends Fruit{
 	@Override
 	public int getPoints() {
 		return 20;
+	}
+
+	@Override
+	public void applyEffect(SnakeEffects effects) {
+		effects.addRainbow();
 	}
 
 	@Override

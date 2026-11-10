@@ -5,8 +5,6 @@ import com.michalgoly.snake.decorator.BasicSnakeRenderer;
 import com.michalgoly.snake.decorator.EyesDecorator;
 import com.michalgoly.snake.decorator.RainbowDecorator;
 import com.michalgoly.snake.decorator.SnakeRenderer;
-import com.michalgoly.snake.factory.Banana;
-import com.michalgoly.snake.factory.Cherry;
 import com.michalgoly.snake.factory.Fruit;
 
 /**
@@ -35,16 +33,25 @@ public class SnakeEffects {
 	}
 
 	/**
-	 * Attaches an effect. Eating the same fruit again restarts its 20 seconds.
+	 * Lets the eaten fruit apply its own effect
 	 */
 	public void fruitEaten(Fruit eaten) {
-		if (eaten instanceof Banana) {
-			rainbowTicksLeft = ticksPerEffect;
-		} else if (eaten instanceof Cherry) {
-			eyesTicksLeft = ticksPerEffect;
-		} else {
-			return; // an apple has no effect
-		}
+    	eaten.applyEffect(this);
+	}
+
+	/**
+	 * Attaches the rainbow effect. Eating another banana restarts its 20 seconds.
+	 */
+	public void addRainbow() {
+		rainbowTicksLeft = ticksPerEffect;
+		rebuildRenderer();
+	}
+
+	/**
+	 * Attaches the eyes effect. Eating another cherry restarts its 20 seconds.
+	 */
+	public void addEyes() {
+		eyesTicksLeft = ticksPerEffect;
 		rebuildRenderer();
 	}
 
@@ -52,18 +59,19 @@ public class SnakeEffects {
 	 * Called once per game tick. When an effect runs out it is withdrawn.
 	 */
 	public void tick() {
-		boolean expired = false;
-		
-		if (rainbowTicksLeft > 0 && --rainbowTicksLeft == 0) {
-			expired = true;
-		}
-		if (eyesTicksLeft > 0 && --eyesTicksLeft == 0) {
-			expired = true;
-		}
-		if (expired) {
-			rebuildRenderer();
-		}
-	}
+    // An effect with 1 tick left ends on this tick
+    boolean anEffectEnds = rainbowTicksLeft == 1 || eyesTicksLeft == 1;
+
+    if (rainbowTicksLeft > 0) {
+        rainbowTicksLeft--;
+    }
+    if (eyesTicksLeft > 0) {
+        eyesTicksLeft--;
+    }
+    if (anEffectEnds) {
+        rebuildRenderer();
+    }
+}
 
 	/**
 	 * Wraps the basic renderer in the decorators that are active right now.
