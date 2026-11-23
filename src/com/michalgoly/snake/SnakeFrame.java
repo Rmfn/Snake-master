@@ -12,6 +12,9 @@ import com.horstmann.corejava.GBC;
 import com.michalgoly.snake.Facade.GameFacade;
 import com.michalgoly.snake.builder.ConcreteGameConfigBuilder;
 import com.michalgoly.snake.builder.GameConfig;
+import com.michalgoly.snake.state.GameState;
+import com.michalgoly.snake.state.GameOverState;
+import com.michalgoly.snake.state.ReadyState;
 // import com.michalgoly.snake.facade.GameFacade;
 
 /**
@@ -39,7 +42,7 @@ private GameConfig config = new ConcreteGameConfigBuilder()
 	// Current direction of the snake
 	private Direction direction = Direction.UP;
 	
-	private boolean started = false;
+	private GameState state;
 	
 	/**
 	 * This constructor initializes GUI components, game thread and the frame
@@ -48,6 +51,7 @@ private GameConfig config = new ConcreteGameConfigBuilder()
 	public SnakeFrame() {
 		initComponents();
 		initGame();
+		setState(new ReadyState());
 		initFrame();	
 	}
 	
@@ -86,38 +90,61 @@ private GameConfig config = new ConcreteGameConfigBuilder()
 		setResizable(false);
 		setVisible(true);
 	}
+
+	//Context methods used by the concrete states
+
+	public void setState(GameState state) {
+		this.state = state;
+		gameField.setStatusText(state.getStatusText());
+	}
+
+	public void startGame() {
+		gameFacade.startGame();
+	}
+
+	public void changeDirection(Direction direction) {
+		this.direction = direction;
+		gameFacade.changeDirection(direction);
+	}
+
+	public Direction getDirection() {
+		return direction;
+	}
+
+	public void pauseGame() {
+		gameFacade.pauseGame();
+	}
+
+	public void resumeGame() {
+		gameFacade.resumeGame();
+	}
 	
 	/**
-	 * Starts a new game
+	 * Called by Game on the game thread when the snake dies.
+	 * The state and the dialog must change on the Swing thread (EDT).
 	 */
-	public void newGame() {
-    started = true;
-    gameFacade.startGame();
-}
-	
+	public void gameOver() {
+		EventQueue.invokeLater(() -> {
+			setState(new GameOverState());
+			showGameOverDialog();
+		});
+	}
+
 	/**
-	 * Ends the game and enables the user to decide whether he wants to continue
-	 * to play by displaying a dialog box. 
+	 * Lets the user decide whether he wants to continue to play.
 	 */
-	public void gameOver() {		
-		int returnValue = JOptionPane.showConfirmDialog(this, 
+	private void showGameOverDialog() {
+		int returnValue = JOptionPane.showConfirmDialog(this,
 				"Do you want to start a new game?", "GAME OVER!", JOptionPane
 				.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-		
-		switch (returnValue) {
-			case JOptionPane.OK_OPTION:
-				direction = Direction.UP;
-				started = false;
-				gameFacade.restartGame();
-				break;
-				
-			case JOptionPane.CANCEL_OPTION:
-				System.exit(0);
-				break;
-			default:
-				JOptionPane.showMessageDialog(getParent(), 
-						"Something went wrong :( /n Please relunch app");
-				break;
+
+		if (returnValue == JOptionPane.CANCEL_OPTION) {
+			System.exit(0);
+		} else {
+			// OK, or the dialog was closed with X: start again
+			gameFacade.restartGame();
+			direction = Direction.UP;
+			setState(new ReadyState());
 		}
 	}
 	
@@ -143,41 +170,28 @@ private GameConfig config = new ConcreteGameConfigBuilder()
 	 */
 	private class KeyboardHandler extends KeyAdapter {
 		
-		@Override
+				@Override
 		public void keyPressed(KeyEvent e) {
-
-        if (e.getKeyCode() == KeyEvent.VK_UP) {
-            if (direction == Direction.DOWN) return;
-            if (!started) newGame();
-
-            gameFacade.changeDirection(Direction.UP);
-            direction = Direction.UP;
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-            if (direction == Direction.UP) return;
-            if (!started) newGame();
-
-            gameFacade.changeDirection(Direction.DOWN);
-            direction = Direction.DOWN;
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            if (direction == Direction.RIGHT) return;
-            if (!started) newGame();
-
-            gameFacade.changeDirection(Direction.LEFT);
-            direction = Direction.LEFT;
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            if (direction == Direction.LEFT) return;
-            if (!started) newGame();
-
-            gameFacade.changeDirection(Direction.RIGHT);
-            direction = Direction.RIGHT;
-        }
-    }
+			switch (e.getKeyCode()) {
+				case KeyEvent.VK_UP:
+					state.arrowPressed(SnakeFrame.this, Direction.UP);
+					break;
+				case KeyEvent.VK_DOWN:
+					state.arrowPressed(SnakeFrame.this, Direction.DOWN);
+					break;
+				case KeyEvent.VK_LEFT:
+					state.arrowPressed(SnakeFrame.this, Direction.LEFT);
+					break;
+				case KeyEvent.VK_RIGHT:
+					state.arrowPressed(SnakeFrame.this, Direction.RIGHT);
+					break;
+				case KeyEvent.VK_P:
+					state.pausePressed(SnakeFrame.this);
+					break;
+				default:
+					break;
+			}
+		}
 }
 }
 

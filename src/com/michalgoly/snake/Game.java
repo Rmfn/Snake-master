@@ -17,7 +17,14 @@ public class Game implements Runnable {
 	private Snake snake;
 	private final GameConfig config;
     private final SnakeEffects effects;
+    private volatile boolean paused = false;
 
+    /**
+	 * Used by GameFacade for Pause / Resume
+	 */
+	public void setPaused(boolean paused) {
+		this.paused = paused;
+	}
 	
 	/**
 	 * Constructs a new runnable Game object which can be used to create
@@ -45,6 +52,7 @@ public class Game implements Runnable {
 	public void run() {
 		try {
             while (true) {
+                 if (!paused) {
                 snake.move();
                 effects.tick();
                 Fruit eaten = snake.check();
@@ -59,6 +67,7 @@ public class Game implements Runnable {
                 if (!Thread.currentThread().isInterrupted()) {
                     gameField.repaint();
                 }
+            }
                 Thread.sleep(config.getDelay());
             }
 		} catch (InterruptedException ex) {

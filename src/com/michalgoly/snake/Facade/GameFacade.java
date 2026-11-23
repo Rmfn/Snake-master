@@ -51,6 +51,14 @@ public class GameFacade {
         }
     }
 
+    public void pauseGame() {
+        game.setPaused(true);
+    }
+
+    public void resumeGame() {
+        game.setPaused(false);
+    }
+    
     public void restartGame() {
         // Reset the game state
         snake = null;

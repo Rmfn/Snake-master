@@ -2,6 +2,8 @@ package com.michalgoly.snake;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -51,6 +53,10 @@ public class GameField extends JPanel {
 	private Fruit apple;
 
 	private volatile SnakeRenderer snakeRenderer;
+
+	// Text of the current game state, null = nothing to show
+	private volatile String statusText = null;
+	private static final Font STATUS_FONT = new Font("SansSerif", Font.BOLD, 18);
 	
 	/**
 	 * Constructs the game field, which is the rectangular area where snake can
@@ -126,6 +132,11 @@ public class GameField extends JPanel {
 		this.snakeParts = snakeParts;
 	}
 
+	public void setStatusText(String text) {
+		this.statusText = text;
+		repaint();
+	}
+
 	public void setSnakeRenderer(SnakeRenderer snakeRenderer) {
 		this.snakeRenderer = snakeRenderer;
 		repaint();
@@ -154,5 +165,19 @@ public class GameField extends JPanel {
 		}
 		
 		snakeRenderer.draw(g2, snakeParts);
+
+		String text = statusText;
+		if (text != null) {
+			int midY = 50;
+			g2.setPaint(new Color(0, 0, 0, 170));
+			g2.fillRect(0, midY - 25, getWidth(), 50);
+
+			g2.setFont(STATUS_FONT);
+			FontMetrics fm = g2.getFontMetrics();
+			int x = (getWidth() - fm.stringWidth(text)) / 2;
+			int y = midY + (fm.getAscent() - fm.getDescent()) / 2;
+			g2.setPaint(Color.WHITE);
+			g2.drawString(text, x, y);
+		}
 	}
 }
