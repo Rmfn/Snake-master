@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.FontMetrics;
 
 import javax.swing.JPanel;
 
@@ -20,6 +21,8 @@ public class ScorePanel extends JPanel {
 	
 	private final Font FONT;
 	private final String SCORE_LABEL = "SCORE:";
+	private static final Font HINT_FONT = new Font("SansSerif", Font.PLAIN, 14);
+	private final String HINT_LABEL = "Press P to Pause or Resume";
 	private String score;
 	
 	public ScorePanel() {
@@ -58,5 +61,12 @@ public class ScorePanel extends JPanel {
 		g2.drawString(SCORE_LABEL, 15, 32);
 		g2.setPaint(new Color(215, 34, 38)); // RED
 		g2.drawString(score, 105, 32);
+
+		g2.setFont(HINT_FONT);
+        FontMetrics fm = g2.getFontMetrics();
+        int x = getWidth() - fm.stringWidth(HINT_LABEL) - 15;
+        g2.setPaint(Color.LIGHT_GRAY);
+        g2.drawString(HINT_LABEL, x, 32);
+
 	}
 }

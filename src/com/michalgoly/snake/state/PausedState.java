@@ -22,6 +22,6 @@ public class PausedState implements GameState {
 
     @Override
     public String getStatusText() {
-        return "PAUSED - press P to resume";
+        return "PAUSED";
     }
 }

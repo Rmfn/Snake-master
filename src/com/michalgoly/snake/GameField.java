@@ -168,9 +168,10 @@ public class GameField extends JPanel {
 
 		String text = statusText;
 		if (text != null) {
+			g2.setPaint(new Color(0, 0, 0, 160));
+			g2.fillRect(0, 0, getWidth(), getHeight());
+
 			int midY = 50;
-			g2.setPaint(new Color(0, 0, 0, 170));
-			g2.fillRect(0, midY - 25, getWidth(), 50);
 
 			g2.setFont(STATUS_FONT);
 			FontMetrics fm = g2.getFontMetrics();
